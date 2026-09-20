@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TH Investor Buzz — Weekly Market Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0d10;
+  --panel:#15171c;
+  --panel-2:#1c1f26;
+  --line:#262a33;
+  --ink:#e9ecf2;
+  --ink-dim:#9aa3b2;
+  --ink-faint:#6b7382;
+  --up:#2ecc8f;
+  --down:#f0554d;
+  --warn:#e8a33d;
+  --accent:#ff8a3d;
+  --blue:#4c9bf5;
+  --radius:12px;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans Thai','IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 80px}
+
+/* ---------- ticker ---------- */
+.tape{
+  background:#101217;border-bottom:1px solid var(--line);
+  overflow:hidden;white-space:nowrap;position:sticky;top:0;z-index:50;
+}
+.tape-inner{display:inline-block;padding:9px 0;animation:slide 48s linear infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.tape-inner{animation:none}}
+.tape:hover .tape-inner{animation-play-state:paused}
+.tk{display:inline-block;padding:0 20px;font-size:12.5px;font-family:var(--mono);color:var(--ink-dim)}
+.tk b{color:var(--ink);font-weight:600}
+.tk .up{color:var(--up)}.tk .down{color:var(--down)}
+
+/* ---------- header ---------- */
+header{padding:30px 0 18px;border-bottom:1px solid var(--line);margin-bottom:26px}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px;letter-spacing:-.4px}
+.sub{color:var(--ink-dim);font-size:13.5px;margin:0}
+.statusbar{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--panel);border:1px solid var(--line);border-radius:100px;
+  padding:6px 13px;font-size:12px;font-family:var(--mono);color:var(--ink-dim);
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--up);flex:none}
+.dot.stale{background:var(--warn)}
+.dot.dead{background:var(--down)}
+button.refresh{
+  font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  border-radius:100px;padding:7px 15px;transition:background .15s;
+}
+button.refresh:hover{background:#252932}
+button.refresh:disabled{opacity:.5;cursor:wait}
+
+/* ---------- sections ---------- */
+section{margin:38px 0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:6px}
+h2{font-size:20px;margin:0;letter-spacing:-.2px}
+.sec-meta{font-size:12px;color:var(--ink-faint);font-family:var(--mono)}
+.rule{height:1px;background:var(--line);margin:12px 0 20px}
+
+/* ---------- hero index ---------- */
+.hero{
+  display:grid;grid-template-columns:minmax(260px,1.1fr) 2fr;gap:18px;
+}
+.idx{
+  background:linear-gradient(160deg,#181b22,#12141a);
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+}
+.idx .lab{font-size:12px;color:var(--ink-faint);font-family:var(--mono);margin-bottom:4px}
+.idx .val{font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.05;font-family:var(--mono)}
+.idx .chg{font-size:15px;font-weight:600;margin-top:4px}
+.idx .note{font-size:12px;color:var(--ink-faint);margin-top:12px;line-height:1.5}
+.snap{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:2px;
+}
+.snap div{padding:9px 10px;border-radius:8px}
+.snap span{display:block;font-size:11.5px;color:var(--ink-faint);font-family:var(--mono)}
+.snap strong{font-size:16px;font-weight:600;font-family:var(--mono)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.filters button{
+  font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;
+  background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+  border-radius:100px;padding:6px 15px;transition:all .15s;
+}
+.filters button:hover{border-color:#3a414f;color:var(--ink)}
+.filters button[aria-pressed="true"]{
+  background:var(--ink);border-color:var(--ink);color:#0c0d10;font-weight:600;
+}
+.empty-msg{
+  display:none;padding:26px;text-align:center;color:var(--ink-dim);font-size:14px;
+  border:1px dashed var(--line);border-radius:var(--radius);
+}
+.empty-msg.show{display:block}
+
+/* ---------- stock cards ---------- */
+.cards{display:grid;gap:10px}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:start;
+}
+.card.hide{display:none}
+.rank{
+  font-family:var(--mono);font-size:19px;font-weight:600;color:var(--accent);
+  padding-top:1px;
+}
+.rank small{display:block;font-size:10px;color:var(--ink-faint);font-weight:500;letter-spacing:.3px}
+.tkr{display:flex;flex-wrap:wrap;align-items:baseline;gap:9px;margin-bottom:3px}
+.tkr b{font-size:17px;font-weight:700;letter-spacing:.3px}
+.tkr .co{font-size:12.5px;color:var(--ink-dim)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.tag{
+  font-size:10.5px;font-family:var(--mono);font-weight:600;letter-spacing:.3px;
+  padding:2px 8px;border-radius:5px;background:var(--panel-2);color:var(--ink-dim);
+  border:1px solid var(--line);
+}
+.tag.bullish{background:#0f2a1f;color:var(--up);border-color:#1b4534}
+.tag.bearish{background:#2b1315;color:var(--down);border-color:#4a1f21}
+.tag.mixed{background:#2b2312;color:var(--warn);border-color:#4a3c1c}
+.tag.caution{background:#2b1315;color:var(--warn);border-color:#4a3320}
+.why{font-size:13.5px;color:var(--ink-dim);line-height:1.62;margin:0}
+.why b{color:var(--ink);font-weight:600}
+.px{text-align:right;font-family:var(--mono);min-width:104px}
+.px .p{font-size:17px;font-weight:600}
+.px .d{font-size:13px;font-weight:600}
+.px .asof{font-size:10.5px;color:var(--ink-faint);margin-top:3px;font-family:var(--sans)}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--ink-dim)}
+.buzz{grid-column:1/-1;margin-top:11px;display:flex;align-items:center;gap:11px}
+.buzz .bar{flex:1;height:5px;background:#22262f;border-radius:100px;overflow:hidden}
+.buzz .fill{height:100%;background:linear-gradient(90deg,#ff8a3d,#ffc46b);width:0;transition:width .7s cubic-bezier(.4,0,.2,1);border-radius:100px}
+.buzz .n{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);white-space:nowrap}
+.buzz .n b{color:var(--accent);font-weight:600}
+
+/* ---------- strategies (matches reference layout) ---------- */
+.strat{
+  background:var(--panel-2);border-radius:var(--radius);padding:16px 20px;
+  display:grid;grid-template-columns:34px 1fr;gap:6px 14px;margin-bottom:10px;
+  border:1px solid transparent;
+}
+.strat.hide{display:none}
+.strat .num{
+  font-family:var(--mono);font-size:19px;font-weight:600;color:var(--accent);
+  grid-row:1/3;padding-top:2px;
+}
+.strat-top{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.strat h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.1px}
+.prio{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.5px;
+  padding:3px 10px;border-radius:6px;white-space:nowrap;
+}
+.prio.urgent{background:#39151a;color:#f4655c;border:1px solid #58202a}
+.prio.week{background:#332512;color:var(--warn);border:1px solid #55401c}
+.prio.monitor{background:#22262f;color:var(--ink-dim);border:1px solid #333947}
+.strat p{margin:2px 0 0;font-size:14px;color:#c4cad6;line-height:1.66}
+.strat .src{margin-top:7px;font-size:11.5px;color:var(--ink-faint)}
+
+/* ---------- news feed ---------- */
+.feed{display:grid;gap:9px}
+.item{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;
+}
+.item a{font-size:14.5px;font-weight:600;color:var(--ink);line-height:1.5;display:block}
+.item a:hover{color:var(--blue)}
+.item .m{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);margin-top:5px}
+.skel{height:56px;background:linear-gradient(90deg,#15171c,#1d2128,#15171c);
+  background-size:200% 100%;animation:sh 1.4s linear infinite;border-radius:10px}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+.feed-error{
+  border:1px solid #3a2020;background:#1d1416;border-radius:10px;padding:14px 16px;
+  font-size:13.5px;color:#e5b4b0;
+}
+.feed-error a{color:#f4938c}
+
+/* ---------- alerts / macro / table ---------- */
+.alerts{display:grid;gap:10px}
+.alert{
+  background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:10px;padding:14px 17px;
+}
+.alert.red{border-left-color:var(--down)}
+.alert h4{margin:0 0 5px;font-size:14.5px;font-weight:700}
+.alert p{margin:0;font-size:13.5px;color:var(--ink-dim);line-height:1.6}
+.macro{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.mc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.mc .k{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono)}
+.mc .v{font-size:22px;font-weight:700;font-family:var(--mono);margin:2px 0 5px;letter-spacing:-.5px}
+.mc .d{font-size:12.5px;color:var(--ink-dim);line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+th,td{padding:11px 15px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--panel-2);font-size:11.5px;font-family:var(--mono);color:var(--ink-dim);font-weight:600}
+tr:last-child td{border-bottom:none}
+td:first-child{white-space:normal}
+
+/* ---------- footer ---------- */
+.sources{font-size:13px;color:var(--ink-dim);line-height:1.9}
+.disc{
+  margin-top:22px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;font-size:12.5px;color:var(--ink-faint);line-height:1.7;
+}
+@media (max-width:760px){
+  h1{font-size:23px}
+  .hero{grid-template-columns:1fr}
+  .card{grid-template-columns:32px 1fr;padding:14px}
+  .px{grid-column:2;text-align:left;min-width:0;margin-top:6px}
+  .idx .val{font-size:34px}
+  .wrap{padding:0 14px 60px}
+}
+</style>
+</head>
+<body>
+
+<div class="tape"><div class="tape-inner" id="tape"></div></div>
+
+<div class="wrap">
+
+<header>
+  <h1>🇹🇭 TH Investor Buzz</h1>
+  <p class="sub">Weekly market intelligence — Thai retail investor discussion tracker</p>
+  <div class="statusbar">
+    <span class="pill"><span class="dot" id="statusDot"></span><span id="statusText">Starting…</span></span>
+    <span class="pill" id="clock">—</span>
+    <button class="refresh" id="refreshBtn">Refresh now</button>
+  </div>
+</header>
+
+<!-- ============ INDEX + SNAPSHOT ============ -->
+<section>
+  <div class="hero">
+    <div class="idx">
+      <div class="lab">SET INDEX</div>
+      <div class="val" id="setVal">1,586.26</div>
+      <div class="chg up" id="setChg">▲ +2.92 &nbsp;+0.18%</div>
+      <div class="note">
+        Session of 18 Sep 2026 · High 1,592.31 / Low 1,584.35<br>
+        Sep 15 close 1,578.66 (−0.78%) · Sep 14 close 1,591.07 (−0.84%)<br>
+        <a href="https://www.set.or.th/en/home" target="_blank" rel="noopener">Live index → SET.or.th</a>
+      </div>
+    </div>
+    <div class="snap">
+      <div><span>Fed policy</span><strong>Hiked 16 Sep</strong></div>
+      <div><span>Brent crude</span><strong>~$101</strong></div>
+      <div><span>Top by value</span><strong>KTB</strong></div>
+      <div><span>Foreign flow</span><strong>Net sell</strong></div>
+      <div><span>BOT rate</span><strong>1.00% ⚠</strong></div>
+      <div><span>SET support</span><strong>1,560</strong></div>
+      <div><span>SET resistance</span><strong>1,575</strong></div>
+      <div><span>Turnover</span><strong>฿61.9bn</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIONABLE STRATEGIES ============ -->
+<section>
+  <div class="sec-head">
+    <h2>⚡ Actionable Strategies</h2>
+    <span class="sec-meta">Derived from this week's news &amp; buzz ranking</span>
+  </div>
+  <div class="rule"></div>
+
+  <div class="filters" data-group="strat">
+    <button data-filter="all" aria-pressed="true">All</button>
+    <button data-filter="urgent" aria-pressed="false">Urgent</button>
+    <button data-filter="week" aria-pressed="false">This week</button>
+    <button data-filter="monitor" aria-pressed="false">Monitor</button>
+  </div>
+
+  <div id="stratList">
+    <article class="strat" data-group="strat" data-tags="urgent">
+      <div class="num">1</div>
+      <div class="strat-top">
+        <span class="prio urgent">URGENT</span>
+        <h3>Existing User Activation — DELTA Volatility Alert</h3>
+      </div>
+      <div>
+        <p>DELTA เป็นหุ้นที่ถูกพูดถึงมากที่สุดในสัปดาห์นี้ จากดีล exchangeable bond $1.5bn ของบริษัทแม่ (dilution ถูกจำกัดไว้ที่ 1.4%) บวกแรงขายกลุ่ม semiconductor ทั่วโลก — ส่ง push แจ้งเตือนให้ user ที่เคยดูหน้า DELTA ตั้ง Price Alert ภายในวันนี้ และแนบบทวิเคราะห์สั้น 3 bullet ว่า dilution จริงคือเท่าไร วัดผลด้วยจำนวน alert ที่ถูกตั้งใหม่</p>
+        <div class="src">Trigger: Delta dilution capped at 1.4% (Kaohoon, 15 Sep) · Buzz rank #1</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="urgent">
+      <div class="num">2</div>
+      <div class="strat-top">
+        <span class="prio urgent">URGENT</span>
+        <h3>New User Acquisition — Fed Rate Hike Explainer</h3>
+      </div>
+      <div>
+        <p>เฟดขึ้นดอกเบี้ยครั้งแรกในรอบ 3 ปีเมื่อ 16 ก.ย. และยังส่งสัญญาณ hawkish ว่าอาจขึ้นอีกในเดือน ธ.ค. — ทำ content "ดอกเบี้ยขึ้นแล้วพอร์ตต้องปรับยังไง" ลง Facebook + moomoo Community ภายใน 24 ชม. ช่วงที่ search volume ยังพีค แนบ deep link เข้าหน้า US market วัดผลจาก install ที่มาจาก campaign link</p>
+        <div class="src">Trigger: Fed first hike in three years (17 Sep) · หน้าต่างเวลาสั้น</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="week">
+      <div class="num">3</div>
+      <div class="strat-top">
+        <span class="prio week">THIS WEEK</span>
+        <h3>Feature Promotion — Bank Basket &amp; Dividend Screener</h3>
+      </div>
+      <div>
+        <p>กลุ่มธนาคารเป็นแรงพยุงตลาดทั้งสัปดาห์ และติด top value ถึง 3 ตัว (KTB, TTB, SCB) — push in-app prompt ให้ user ที่ดูหน้าหุ้นแบงก์ลองใช้ Dividend Calendar และ screener เปรียบเทียบ yield เป็นจังหวะที่ feature discovery ทำได้ง่ายที่สุด เพราะ intent มาเองแล้ว</p>
+        <div class="src">Trigger: KTB / TTB / SCB ติด top-5 by value (SET, 17 Sep)</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="week">
+      <div class="num">4</div>
+      <div class="strat-top">
+        <span class="prio week">THIS WEEK</span>
+        <h3>Community Engagement — "น้ำมัน $101 จะไปต่อไหม" Thread</h3>
+      </div>
+      <div>
+        <p>Brent แตะ ~$101 จากความตึงเครียดตะวันออกกลาง ทำให้ PTTEP และ TOP กลับมาเป็นหัวข้อถกเถียง — เปิด discussion thread บน Community ถามตรงว่า "ถือพลังงานต่อ หรือขายรับข่าว?" ให้ทีม ops คอมเมนต์ seed 3–4 ความเห็นแรก เพื่อให้ thread ติด momentum ก่อนตลาดเปิดพรุ่งนี้</p>
+        <div class="src">Trigger: Brent ~$101, Middle East tension (Money &amp; Banking, สัปดาห์นี้)</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="week">
+      <div class="num">5</div>
+      <div class="strat-top">
+        <span class="prio week">THIS WEEK</span>
+        <h3>TikTok KOL Collaboration — หุ้นไทย Creator</h3>
+      </div>
+      <div>
+        <p>ประสาน KOL หุ้นไทย 2–3 คน (ฐานผู้ติดตาม 50K–200K) ให้รีวิว feature + code refer — เลือกคนที่พูดถึง DELTA หรือกลุ่มแบงก์เยอะในช่วงนี้จะ authentic กว่า และ brief ให้ทำในธีม "ดอกเบี้ยขึ้น" เพื่อเกาะกระแสเดียวกับ content หลัก</p>
+        <div class="src">Lead time 3–5 วัน — เริ่มติดต่อภายในสัปดาห์นี้</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="monitor">
+      <div class="num">6</div>
+      <div class="strat-top">
+        <span class="prio monitor">MONITOR</span>
+        <h3>Data Center Theme — GULF และบอร์ดดาต้าเซ็นเตอร์</h3>
+      </div>
+      <div>
+        <p>บอร์ดดาต้าเซ็นเตอร์แห่งชาติเพิ่งประชุมนัดแรก และ GULF มีธุรกิจ data center &amp; cloud อยู่ในพอร์ตแล้ว — ยังไม่ต้องยิง content เต็มรูปแบบ แต่เตรียม asset ไว้ล่วงหน้า พอมีมติออกมาจะได้ปล่อยได้ภายในวันเดียว ธีมนี้มีโอกาสเป็น narrative ยาวข้ามไตรมาส</p>
+        <div class="src">Trigger: การประชุมบอร์ดดาต้าเซ็นเตอร์นัดแรก (4 ก.ย.)</div>
+      </div>
+    </article>
+
+    <article class="strat" data-group="strat" data-tags="monitor">
+      <div class="num">7</div>
+      <div class="strat-top">
+        <span class="prio monitor">MONITOR</span>
+        <h3>Pantip Partnership — Sponsored Insight</h3>
+      </div>
+      <div>
+        <p>Pantip ห้องสินธรยังเป็นแหล่งข้อมูลหลักของนักลงทุนรายย่อย — เจรจา Sponsored Content หรือ label "Powered by moomoo Data" บนกระทู้ยอดนิยม เพื่อ brand awareness ในกลุ่ม target ที่ตรงที่สุด เป็นดีลที่ใช้เวลา จึงควรเริ่มคุยตั้งแต่ตอนนี้</p>
+        <div class="src">ช่องทางที่ใช้เป็น input ของ buzz score ในหน้านี้ด้วย</div>
+      </div>
+    </article>
+  </div>
+  <div class="empty-msg" data-empty="strat">ไม่มี strategy ในหมวดนี้ — เลือก All เพื่อดูทั้งหมด</div>
+</section>
+
+<!-- ============ THAI STOCKS ============ -->
+<section>
+  <div class="sec-head">
+    <h2>🇹🇭 Thai Stocks</h2>
+    <span class="sec-meta" id="buzzMeta">Ranked by Thai discussion volume · <span id="buzzState">seeded</span></span>
+  </div>
+  <div class="rule"></div>
+
+  <div class="filters" data-group="th">
+    <button data-filter="all" aria-pressed="true">All</button>
+    <button data-filter="bullish" aria-pressed="false">Bullish</button>
+    <button data-filter="bearish" aria-pressed="false">Bearish</button>
+    <button data-filter="mixed" aria-pressed="false">Mixed</button>
+    <button data-filter="energy" aria-pressed="false">Energy</button>
+    <button data-filter="banking" aria-pressed="false">Banking</button>
+    <button data-filter="tech" aria-pressed="false">Tech</button>
+    <button data-filter="consumer" aria-pressed="false">Consumer</button>
+  </div>
+
+  <div class="cards" id="thCards">
+
+    <article class="card" data-group="th" data-tags="mixed tech" data-ticker="DELTA" data-q="DELTA หุ้น เดลต้า">
+      <div class="rank">#<span class="rk">1</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>DELTA</b><span class="co">Delta Electronics (Thailand) PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag mixed">Mixed</span><span class="tag">Tech</span></div>
+        <p class="why">หุ้นที่ถูกถกเถียงมากที่สุดในสัปดาห์นี้ บริษัทแม่กำหนดเงื่อนไข <b>exchangeable bond $1.5bn</b> โดย dilution ถูกจำกัดที่ 1.4% พร้อมกันนั้นโดนแรงขายกลุ่มชิปทั่วโลกหลังผู้บริหารบริษัท AI ออกมาเรียกร้องให้ชะลอการพัฒนา — กลุ่ม LINE แตกเป็นสองฝั่ง: รับของถูก vs. รอ dilution ชัดกว่านี้</p>
+      </div>
+      <div class="px"><div class="p">฿243.00</div><div class="d up">+2.00 +0.83%</div><div class="asof">17 ก.ย. ✓</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:100%"></div></div><div class="n">buzz <b class="bz">100</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish energy" data-ticker="GULF" data-q="GULF หุ้น กัลฟ์">
+      <div class="rank">#<span class="rk">2</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>GULF</b><span class="co">Gulf Development PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Energy</span></div>
+        <p class="why">ติด top-5 by value ต่อเนื่อง และเป็นตัวเล่นหลักของธีม <b>data center &amp; cloud</b> หลังบอร์ดดาต้าเซ็นเตอร์แห่งชาติประชุมนัดแรก ต่างชาติถือ 38.75% ใกล้เพดาน 49% รายย่อยถือ 32.06%</p>
+      </div>
+      <div class="px"><div class="p">฿61.50</div><div class="d up">+0.50 +0.82%</div><div class="asof">17 ก.ย. ✓</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:82%"></div></div><div class="n">buzz <b class="bz">82</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish banking" data-ticker="KTB" data-q="KTB กรุงไทย หุ้น">
+      <div class="rank">#<span class="rk">3</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>KTB</b><span class="co">Krung Thai Bank PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Banking</span></div>
+        <p class="why"><b>มูลค่าซื้อขายสูงสุดของตลาด</b> เมื่อ 17 ก.ย. กลุ่มแบงก์เป็นแรงพยุงหลักไม่ให้ดัชนีลงแรงขณะที่กลุ่มอิเล็กทรอนิกส์ถูกเท เป็น rotation trade ที่รายย่อยพูดถึงมากขึ้นหลังเฟดขึ้นดอกเบี้ย</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">0.00%</div><div class="asof">17 ก.ย. ✓ top value</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:74%"></div></div><div class="n">buzz <b class="bz">74</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish energy" data-ticker="PTTEP" data-q="PTTEP ปตท.สผ. หุ้น">
+      <div class="rank">#<span class="rk">4</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>PTTEP</b><span class="co">PTT Exploration &amp; Production PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Energy</span></div>
+        <p class="why">ผู้ได้ประโยชน์ตรงจาก <b>Brent ~$101</b> จากสถานการณ์ตะวันออกกลาง ถูกอ้างถึงว่าเป็นหนึ่งในตัวที่ช่วยพยุงดัชนีร่วมกับกลุ่มแบงก์ ประเด็นถกเถียงหลัก: ราคาน้ำมันระดับนี้ยั่งยืนแค่ไหน</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ราคายังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:68%"></div></div><div class="n">buzz <b class="bz">68</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="mixed energy" data-ticker="TOP" data-q="TOP ไทยออยล์ หุ้น">
+      <div class="rank">#<span class="rk">5</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>TOP</b><span class="co">Thai Oil PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag mixed">Mixed</span><span class="tag">Energy</span></div>
+        <p class="why">ถูกระบุชื่อเป็นหนึ่งใน <b>แรงขายที่กดดัชนี</b> ร่วมกับ DELTA และ GULF ในเซสชันต้นสัปดาห์ แม้ราคาน้ำมันขึ้น — ตลาดกังวลเรื่อง crack spread และนโยบายลดราคาดีเซล ฝั่งรายย่อยยังแบ่งสองทาง</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ราคายังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:61%"></div></div><div class="n">buzz <b class="bz">61</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish banking" data-ticker="SCB" data-q="SCB ไทยพาณิชย์ หุ้น">
+      <div class="rank">#<span class="rk">6</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>SCB</b><span class="co">SCB X PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Banking</span></div>
+        <p class="why">ติด top value 17 ก.ย. เป็นตัวหลักของ <b>dividend-yield trade</b> ที่กลับมาน่าสนใจหลังเฟดขึ้นดอกเบี้ย กระทู้เปรียบเทียบ yield ระหว่างแบงก์ใหญ่กลับมาคึกในห้องสินธร</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d up">+1.00 +0.66%</div><div class="asof">17 ก.ย. ✓</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:57%"></div></div><div class="n">buzz <b class="bz">57</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish banking" data-ticker="TTB" data-q="TTB ทีทีบี ทหารไทยธนชาต หุ้น">
+      <div class="rank">#<span class="rk">7</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>TTB</b><span class="co">TMBThanachart Bank PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Banking</span></div>
+        <p class="why">ขึ้น <b>+1.95%</b> เมื่อ 17 ก.ย. แรงสุดในกลุ่มแบงก์ที่ติด top value เป็นหุ้นราคาต่อหุ้นต่ำที่รายย่อยเข้าถึงง่าย จึงมักโผล่ในกระทู้ "แบงก์ตัวไหนคุ้มสุด"</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d up">+0.06 +1.95%</div><div class="asof">17 ก.ย. ✓</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:49%"></div></div><div class="n">buzz <b class="bz">49</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bullish consumer" data-ticker="AOT" data-q="AOT ท่าอากาศยานไทย หุ้น">
+      <div class="rank">#<span class="rk">8</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>AOT</b><span class="co">Airports of Thailand PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bullish">Bullish</span><span class="tag">Consumer</span></div>
+        <p class="why">เข้าสู่ช่วง <b>ไฮซีซั่นท่องเที่ยว Q4</b> เป็นธีมที่กลับมาถูกพูดถึงทุกปีช่วงปลาย ก.ย. ประเด็นที่ต้องติดตามคือตัวเลขนักท่องเที่ยวรายเดือนและความคืบหน้าสัมปทาน</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ราคายังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:44%"></div></div><div class="n">buzz <b class="bz">44</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="mixed consumer" data-ticker="CPALL" data-q="CPALL ซีพีออลล์ หุ้น">
+      <div class="rank">#<span class="rk">9</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>CPALL</b><span class="co">CP ALL PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag mixed">Mixed</span><span class="tag">Consumer</span></div>
+        <p class="why">ตัวแทนกลุ่มบริโภคในประเทศ ถูกกดจาก <b>กำลังซื้อที่อ่อนและต้นทุนพลังงานสูง</b> แต่ยังเป็นหุ้นถือยาวยอดนิยมของรายย่อย — เป็นหุ้นที่ถูกยกมาถกเรื่อง DCA บ่อยที่สุดตัวหนึ่ง</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ราคายังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:38%"></div></div><div class="n">buzz <b class="bz">38</b></div></div>
+    </article>
+
+    <article class="card" data-group="th" data-tags="bearish tech" data-ticker="KCE" data-q="KCE เคซีอี อิเล็กทรอนิกส์ หุ้น">
+      <div class="rank">#<span class="rk">10</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>KCE</b><span class="co">KCE Electronics PCL</span></div>
+        <div class="tags"><span class="tag">SET</span><span class="tag bearish">Bearish</span><span class="tag">Tech</span></div>
+        <p class="why">โดนลากลงตาม <b>แรงเทกลุ่มอิเล็กทรอนิกส์ทั้งกลุ่ม</b> หลังหุ้นเทคโนโลยีโลกปรับฐาน บวกแรงกดดันจากบอนด์ยีลด์สหรัฐที่สูง เป็นตัวที่ถูกถามบ่อยว่า "ลงพอหรือยัง"</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ราคายังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:32%"></div></div><div class="n">buzz <b class="bz">32</b></div></div>
+    </article>
+
+  </div>
+  <div class="empty-msg" data-empty="th">ไม่มีหุ้นในหมวดนี้ — เลือก All เพื่อดูทั้งหมด</div>
+</section>
+
+<!-- ============ OFFSHORE ============ -->
+<section>
+  <div class="sec-head">
+    <h2>🌏 Offshore — Discussed by Thai Investors</h2>
+    <span class="sec-meta">Accessible via DR on SET · moomoo US · Jitta</span>
+  </div>
+  <div class="rule"></div>
+
+  <div class="filters" data-group="gl">
+    <button data-filter="all" aria-pressed="true">All</button>
+    <button data-filter="bullish" aria-pressed="false">Bullish</button>
+    <button data-filter="mixed" aria-pressed="false">Mixed</button>
+    <button data-filter="ai" aria-pressed="false">AI / Chips</button>
+    <button data-filter="space" aria-pressed="false">Space</button>
+  </div>
+
+  <div class="cards" id="glCards">
+    <article class="card" data-group="gl" data-tags="mixed ai" data-ticker="NVDA" data-q="NVDA Nvidia หุ้น">
+      <div class="rank">#<span class="rk">1</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>NVDA</b><span class="co">NVIDIA Corporation</span></div>
+        <div class="tags"><span class="tag">NASDAQ</span><span class="tag mixed">Mixed</span><span class="tag">AI / Chips</span></div>
+        <p class="why">หุ้นต่างประเทศอันดับ 1 ที่คนไทยถกกันมากที่สุด ตอนนี้อยู่ในช่วง <b>ปรับฐานของกลุ่มชิป</b> หลังผู้บริหารบริษัท AI เรียกร้องให้ชะลอการพัฒนา — ประเด็นเดียวกับที่ทำให้ DELTA ถูกเทในไทย</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ดูราคาสดที่ลิงก์ ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:100%"></div></div><div class="n">buzz <b class="bz">100</b></div></div>
+    </article>
+
+    <article class="card" data-group="gl" data-tags="mixed ai" data-ticker="TSM" data-q="TSMC ไต้หวัน เซมิคอนดักเตอร์ หุ้น">
+      <div class="rank">#<span class="rk">2</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>TSM</b><span class="co">Taiwan Semiconductor (TSMC)</span></div>
+        <div class="tags"><span class="tag">NYSE ADR</span><span class="tag mixed">Mixed</span><span class="tag">AI / Chips</span></div>
+        <p class="why">ตัวแทนวงจรการลงทุน AI ทั่วโลก ถูกใช้เป็น <b>ตัวเทียบกับ DELTA</b> ในบทวิเคราะห์ฝั่งไทยบ่อยครั้ง เพราะอยู่ห่วงโซ่เดียวกัน</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">n/a</div><div class="asof">ดูราคาสดที่ลิงก์ ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:71%"></div></div><div class="n">buzz <b class="bz">71</b></div></div>
+    </article>
+
+    <article class="card" data-group="gl" data-tags="bullish space" data-ticker="SPCX" data-q="SpaceX หุ้น IPO">
+      <div class="rank">#<span class="rk">3</span><small>BUZZ</small></div>
+      <div>
+        <div class="tkr"><b>SPCX</b><span class="co">SpaceX</span></div>
+        <div class="tags"><span class="tag">NASDAQ</span><span class="tag bullish">Bullish</span><span class="tag">Space</span></div>
+        <p class="why">เข้าตลาดเมื่อ 12 มิ.ย. 2026 ที่ราคา IPO $135 — ผ่านมา 3 เดือน ประเด็นในกลุ่มไทยเปลี่ยนจาก "จองทันไหม" เป็น <b>"lockup หมดเมื่อไร"</b> ตรวจสอบราคาปัจจุบันก่อนใช้อ้างอิงทุกครั้ง</p>
+      </div>
+      <div class="px"><div class="p">—</div><div class="d flat">IPO $135</div><div class="asof">ราคาปัจจุบันยังไม่ดึง ⚠</div></div>
+      <div class="buzz"><div class="bar"><div class="fill" style="width:46%"></div></div><div class="n">buzz <b class="bz">46</b></div></div>
+    </article>
+  </div>
+  <div class="empty-msg" data-empty="gl">ไม่มีหุ้นในหมวดนี้ — เลือก All เพื่อดูทั้งหมด</div>
+</section>
+
+<!-- ============ LIVE NEWS ============ -->
+<section>
+  <div class="sec-head">
+    <h2>📰 Thai Market News</h2>
+    <span class="sec-meta">Auto-refreshes every 5 minutes</span>
+  </div>
+  <div class="rule"></div>
+  <div class="feed" id="feedTH">
+    <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>💬 Retail Discussion Topics</h2>
+    <span class="sec-meta">รายย่อย / กองทุน / ทองคำ — auto-refreshes every 5 minutes</span>
+  </div>
+  <div class="rule"></div>
+  <div class="feed" id="feedRetail">
+    <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+  </div>
+</section>
+
+<!-- ============ ALERTS ============ -->
+<section>
+  <div class="sec-head"><h2>🚨 Watch Items</h2></div>
+  <div class="rule"></div>
+  <div class="alerts">
+    <div class="alert red">
+      <h4>DELTA — Exchangeable bond &amp; dilution</h4>
+      <p>บริษัทแม่กำหนดเงื่อนไข exchangeable bond มูลค่า $1.5bn โดย dilution ของ DELTA ถูกจำกัดไว้ที่ 1.4% (15 ก.ย. 2026) ราคายังผันผวนสูงตามกลุ่มชิปโลก — <a href="https://www.kaohooninternational.com/" target="_blank" rel="noopener">Kaohoon International</a></p>
+    </div>
+    <div class="alert">
+      <h4>Fed — ขึ้นดอกเบี้ยครั้งแรกในรอบ 3 ปี (16 ก.ย.)</h4>
+      <p>ยังส่งสัญญาณ hawkish ว่าอาจขึ้นอีกครั้งในเดือน ธ.ค. ตลาดถูกกดดันจากดอลลาร์แข็งและบอนด์ยีลด์สูง แต่ราคาน้ำมันที่เริ่มอ่อนลงช่วยลดแรงกดดันบางส่วน — <a href="https://www.kaohooninternational.com/markets/590887" target="_blank" rel="noopener">Thai Stock Market Outlook, 17 ก.ย.</a></p>
+    </div>
+    <div class="alert">
+      <h4>ราคาน้ำมัน — Brent แตะ ~$101</h4>
+      <p>จากการปะทะที่รุนแรงขึ้นในตะวันออกกลาง ส่งผลต่อความกังวลเงินเฟ้อโดยตรง กลุ่มพลังงานได้ประโยชน์แต่ตลาดโดยรวมถูกกด</p>
+    </div>
+    <div class="alert">
+      <h4>BOT policy rate — ต้องยืนยันตัวเลขล่าสุด</h4>
+      <p>ตัวเลข 1.00% ในหน้านี้อ้างอิงมติเดือน เม.ย. 2026 กรุณายืนยันกับ <a href="https://www.bot.or.th/" target="_blank" rel="noopener">BOT</a> ก่อนนำไปใช้ในเอกสารที่ส่งต่อ</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MACRO ============ -->
+<section>
+  <div class="sec-head"><h2>📊 Macro Context</h2></div>
+  <div class="rule"></div>
+  <div class="macro">
+    <div class="mc"><div class="k">Fed policy</div><div class="v">Hike</div><div class="d">ขึ้นดอกเบี้ย 16 ก.ย. — ครั้งแรกในรอบ 3 ปี, hawkish, อาจขึ้นอีก ธ.ค.</div></div>
+    <div class="mc"><div class="k">Brent crude</div><div class="v">~$101</div><div class="d">ตะวันออกกลางตึงเครียด กดดันเงินเฟ้อและ sentiment ตลาด</div></div>
+    <div class="mc"><div class="k">SET range (broker)</div><div class="v">1,560–1,575</div><div class="d">แนวรับ / แนวต้านจาก Kasikorn Securities, 17 ก.ย.</div></div>
+    <div class="mc"><div class="k">US bond yield</div><div class="v">สูง</div><div class="d">กดดันหุ้นเติบโตและกลุ่มอิเล็กทรอนิกส์เป็นหลัก</div></div>
+    <div class="mc"><div class="k">Turnover 15 ก.ย.</div><div class="v">฿75.8bn</div><div class="d">ต่างชาติขายสุทธิ 66.95 ลบ. · กองทุนขายสุทธิ 416.55 ลบ.</div></div>
+    <div class="mc"><div class="k">BOT rate</div><div class="v">1.00% ⚠</div><div class="d">อ้างอิงมติ เม.ย. 2026 — ต้องยืนยันก่อนใช้</div></div>
+  </div>
+</section>
+
+<!-- ============ SECTOR ============ -->
+<section>
+  <div class="sec-head"><h2>🏭 Sector Watch</h2></div>
+  <div class="rule"></div>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Sector</th><th>Sentiment</th><th>Key driver</th></tr></thead>
+    <tbody>
+      <tr><td>Banking (KTB, SCB, TTB, BBL)</td><td class="up">Bullish</td><td>แรงพยุงหลักของตลาด · ติด top value 3 ตัว · yield trade หลังเฟดขึ้นดอกเบี้ย</td></tr>
+      <tr><td>Energy E&amp;P (PTTEP)</td><td class="up">Bullish</td><td>Brent ~$101 จากความตึงเครียดตะวันออกกลาง</td></tr>
+      <tr><td>Refinery (TOP)</td><td class="flat">Mixed</td><td>ราคาน้ำมันขึ้นแต่โดนแรงขาย · crack spread และนโยบายราคาดีเซล</td></tr>
+      <tr><td>Power &amp; Data Center (GULF)</td><td class="up">Bullish</td><td>บอร์ดดาต้าเซ็นเตอร์แห่งชาติประชุมนัดแรก · ต่างชาติถือใกล้เพดาน</td></tr>
+      <tr><td>Electronics (DELTA, KCE)</td><td class="down">Bearish</td><td>แรงเทตามหุ้นเทคโนโลยีโลก · บอนด์ยีลด์สูง · dilution ของ DELTA</td></tr>
+      <tr><td>Tourism (AOT)</td><td class="up">Bullish</td><td>เข้าไฮซีซั่น Q4 · ตัวเลขนักท่องเที่ยวรายเดือนเป็นตัวชี้วัด</td></tr>
+      <tr><td>Domestic consumer (CPALL)</td><td class="flat">Mixed</td><td>กำลังซื้ออ่อน · ต้นทุนพลังงานสูงกดดันมาร์จิ้น</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section>
+  <div class="sec-head"><h2>📋 Sources</h2></div>
+  <div class="rule"></div>
+  <div class="sources">
+    · <a href="https://www.set.or.th/en/home" target="_blank" rel="noopener">SET.or.th</a> — index, top value by turnover (17–18 ก.ย. 2026)<br>
+    · <a href="https://www.kaohooninternational.com/markets/590887" target="_blank" rel="noopener">Kaohoon International</a> — Thai Stock Market Outlook, 17 ก.ย. 2026<br>
+    · <a href="https://www.kaohooninternational.com/markets/590686" target="_blank" rel="noopener">Kaohoon International</a> — Delta dilution capped at 1.4%, 15 ก.ย. 2026<br>
+    · <a href="https://moneyandbanking.co.th/2026/270478/" target="_blank" rel="noopener">Money &amp; Banking</a> — สรุปตลาด 15 ก.ย. 2026<br>
+    · <a href="https://moneyandbanking.co.th/2026/269325/" target="_blank" rel="noopener">Money &amp; Banking</a> — แรงขาย TOP-DELTA-GULF, Brent $101<br>
+    · <a href="https://news.google.com/rss/search?q=%E0%B8%AB%E0%B8%B8%E0%B9%89%E0%B8%99%E0%B9%84%E0%B8%97%E0%B8%A2&hl=th&gl=TH&ceid=TH:th" target="_blank" rel="noopener">Google News RSS (TH)</a> — live feed &amp; buzz-score input<br>
+    · <a href="https://pantip.com/tag/%E0%B8%AB%E0%B8%B8%E0%B9%89%E0%B8%99" target="_blank" rel="noopener">Pantip ห้องสินธร</a> — retail discussion reference
+  </div>
+  <div class="disc">
+    <b>Buzz score:</b> ดึงพาดหัวข่าวภาษาไทยจาก Google News RSS 3 ชุด (ตลาดหุ้น / รายย่อย-กองทุน-ทอง / หุ้นรายตัว) ย้อนหลัง 7 วัน แล้วนับว่าแต่ละหุ้นถูกกล่าวถึงในพาดหัวกี่ครั้ง โดยเทียบทั้งชื่อย่อและชื่อภาษาไทย (เช่น DELTA / เดลต้า) ถ่วงน้ำหนักตามความใหม่ (≤24 ชม. ×3, ≤72 ชม. ×2, ที่เหลือ ×1) แล้ว normalize เป็น 0–100 เทียบกับตัวที่สูงสุด<br>
+    ถ้าดึงข่าวไม่ได้หรือได้ไม่ถึง 5 หัวข้อ ระบบจะคงลำดับตั้งต้นไว้และขึ้นสถานะ seeded แทนที่จะแสดงอันดับที่ไม่มีข้อมูลรองรับ<br>
+    เป็น <b>ตัวแทน (proxy)</b> ของความสนใจในวงสนทนา ไม่ใช่การนับโพสต์จริงในกลุ่ม LINE หรือ Pantip ซึ่งไม่มี public API<br><br>
+    <b>ราคา:</b> ตัวเลขที่มี ✓ มาจาก SET เซสชัน 17 ก.ย. 2026 ตัวที่ขึ้น ⚠ คือยังไม่ได้ดึงจากแหล่งทางการ — อย่านำไปใช้อ้างอิงโดยไม่ตรวจสอบ ไม่มีการสร้างตัวเลขขึ้นเอง<br><br>
+    <b>หน้านี้ไม่ใช่คำแนะนำการลงทุน</b> — ศึกษาข้อมูลก่อนตัดสินใจทุกครั้ง
+  </div>
+</section>
+
+</div>
+
+<script>
+'use strict';
+
+/* =========================================================
+   1. FILTER BUTTONS  — works for every group on the page
+   ========================================================= */
+document.querySelectorAll('.filters').forEach(function (bar) {
+  var group = bar.dataset.group;
+  bar.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var filter = btn.dataset.filter;
+
+    bar.querySelectorAll('button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b === btn));
+    });
+
+    var shown = 0;
+    document.querySelectorAll('[data-group="' + group + '"][data-tags]').forEach(function (card) {
+      var match = filter === 'all' || card.dataset.tags.split(/\s+/).indexOf(filter) !== -1;
+      card.classList.toggle('hide', !match);
+      if (match) shown++;
+    });
+
+    var empty = document.querySelector('[data-empty="' + group + '"]');
+    if (empty) empty.classList.toggle('show', shown === 0);
+  });
+});
+
+/* =========================================================
+   2. LIVE DATA ENGINE
+   ========================================================= */
+/* ---- feeds: 3 pooled queries instead of 13 per-ticker queries ---- */
+var FEEDS = {
+  market: 'หุ้นไทย OR SET OR ตลาดหุ้น',
+  retail: 'นักลงทุนรายย่อย OR กองทุนรวม OR ทองคำ OR ดอกเบี้ย',
+  stocks: 'หุ้น DELTA OR GULF OR ธนาคาร OR น้ำมัน OR อิเล็กทรอนิกส์'
+};
+
+function gnews(query) {
+  return 'https://news.google.com/rss/search?q=' +
+         encodeURIComponent(query + ' when:7d') +
+         '&hl=th&gl=TH&ceid=TH:th';
+}
+
+/* ---- transports: raced in parallel, first success wins ---- */
+var TRANSPORTS = [
+  { n: 'allorigins-raw',
+    u: function (x) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(x); },
+    p: function (t) { return t; } },
+  { n: 'allorigins-get',
+    u: function (x) { return 'https://api.allorigins.win/get?url=' + encodeURIComponent(x); },
+    p: function (t) { var j = JSON.parse(t); if (!j.contents) throw new Error('no contents'); return j.contents; } },
+  { n: 'codetabs',
+    u: function (x) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(x); },
+    p: function (t) { return t; } },
+  { n: 'corsproxy',
+    u: function (x) { return 'https://corsproxy.io/?url=' + encodeURIComponent(x); },
+    p: function (t) { return t; } },
+  { n: 'cors.lol',
+    u: function (x) { return 'https://api.cors.lol/?url=' + encodeURIComponent(x); },
+    p: function (t) { return t; } },
+  { n: 'workers',
+    u: function (x) { return 'https://test.cors.workers.dev/?' + x; },
+    p: function (t) { return t; } },
+  { n: 'rss2json',
+    u: function (x) { return 'https://api.rss2json.com/v1/api.json?count=40&rss_url=' + encodeURIComponent(x); },
+    p: function (t) {
+      var j = JSON.parse(t);
+      if (j.status !== 'ok' || !j.items || !j.items.length) throw new Error('rss2json bad');
+      return { json: j.items };
+    } }
+];
+
+function anyOf(list) {
+  if (typeof Promise.any === 'function') {
+    return Promise.any(list).catch(function () { throw new Error('all transports failed'); });
+  }
+  return new Promise(function (res, rej) {
+    var left = list.length, settled = false;
+    list.forEach(function (p) {
+      p.then(function (v) { if (!settled) { settled = true; res(v); } },
+             function () { if (--left === 0 && !settled) rej(new Error('all transports failed')); });
+    });
+  });
+}
+
+function fetchFeed(url) {
+  return anyOf(TRANSPORTS.map(function (tr) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 9000);
+    return fetch(tr.u(url), { signal: ctrl.signal, headers: { Accept: '*/*' } })
+      .then(function (r) {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error(tr.n + ' HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function (t) {
+        if (!t || t.length < 60) throw new Error(tr.n + ' empty');
+        var out = tr.p(t);
+        var items = (out && out.json) ? normJSON(out.json) : parseRSS(out);
+        if (!items.length) throw new Error(tr.n + ' no items');
+        return items;
+      })
+      .catch(function (e) { clearTimeout(timer); throw e; });
+  }));
+}
+
+function parseRSS(xml) {
+  var doc = new DOMParser().parseFromString(xml, 'text/xml');
+  if (doc.querySelector('parsererror')) return [];
+  return Array.prototype.map.call(doc.querySelectorAll('item'), function (it) {
+    function g(sel) { var n = it.querySelector(sel); return n ? n.textContent.trim() : ''; }
+    var d = new Date(g('pubDate'));
+    return {
+      title: g('title'),
+      link: g('link'),
+      date: isNaN(d.getTime()) ? new Date() : d,
+      source: g('source')
+    };
+  }).filter(function (x) { return x.title && x.link; });
+}
+
+function normJSON(items) {
+  return items.map(function (i) {
+    var d = new Date(i.pubDate);
+    return {
+      title: (i.title || '').trim(),
+      link: i.link || '',
+      date: isNaN(d.getTime()) ? new Date() : d,
+      source: i.author || ''
+    };
+  }).filter(function (x) { return x.title && x.link; });
+}
+
+function timeAgo(d) {
+  var m = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (m < 1) return 'เมื่อสักครู่';
+  if (m < 60) return m + ' นาทีที่แล้ว';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + ' ชม.ที่แล้ว';
+  return Math.floor(h / 24) + ' วันที่แล้ว';
+}
+
+function esc(s) { return s.replace(/[<>&]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; }); }
+
+function renderFeed(el, items, label) {
+  if (!items.length) {
+    el.innerHTML = '<div class="feed-error">ดึงข่าวไม่สำเร็จ — ไม่มี proxy ตัวไหนตอบกลับ ' +
+      'กด <b>Refresh now</b> อีกครั้ง หรือเปิดโดยตรงที่ ' +
+      '<a href="https://news.google.com/search?q=' + encodeURIComponent(label) +
+      '&hl=th&gl=TH&ceid=TH:th" target="_blank" rel="noopener">Google News</a></div>';
+    return;
+  }
+  el.innerHTML = items.slice(0, 6).map(function (i) {
+    return '<div class="item"><a href="' + i.link + '" target="_blank" rel="noopener">' +
+      esc(i.title) + '</a><div class="m">' +
+      (i.source ? esc(i.source) + ' · ' : '') + timeAgo(i.date) + '</div></div>';
+  }).join('');
+}
+
+/* ---- load all feeds once, keep a shared headline pool ---- */
+var POOL = [];
+
+function loadAll() {
+  POOL = [];
+  var tasks = [
+    { key: 'market', el: document.getElementById('feedTH') },
+    { key: 'retail', el: document.getElementById('feedRetail') },
+    { key: 'stocks', el: null }
+  ];
+  return Promise.all(tasks.map(function (t) {
+    return fetchFeed(gnews(FEEDS[t.key]))
+      .then(function (items) {
+        POOL = POOL.concat(items);
+        if (t.el) renderFeed(t.el, items, FEEDS[t.key]);
+        return true;
+      })
+      .catch(function () {
+        if (t.el) renderFeed(t.el, [], FEEDS[t.key]);
+        return false;
+      });
+  }));
+}
+
+/* ---- buzz score: count ticker mentions in the pooled headlines ---- */
+var ALIASES = {
+  DELTA: ['delta', 'เดลต้า'],
+  GULF:  ['gulf', 'กัลฟ์'],
+  KTB:   ['ktb', 'กรุงไทย'],
+  PTTEP: ['pttep', 'ปตท.สผ', 'ปตท สผ'],
+  TOP:   ['thaioil', 'thai oil', 'ไทยออยล์'],
+  SCB:   ['scb', 'ไทยพาณิชย์', 'เอสซีบี'],
+  TTB:   ['ttb', 'ทีทีบี', 'ทหารไทยธนชาต'],
+  AOT:   ['aot', 'ท่าอากาศยาน'],
+  CPALL: ['cpall', 'ซีพี ออลล์', 'ซีพีออลล์', 'เซเว่น'],
+  KCE:   ['kce', 'เคซีอี'],
+  NVDA:  ['nvda', 'nvidia', 'เอ็นวิเดีย'],
+  TSM:   ['tsm', 'tsmc', 'taiwan semiconductor'],
+  SPCX:  ['spcx', 'spacex', 'สเปซเอ็กซ์']
+};
+
+function weight(d) {
+  var h = (Date.now() - d.getTime()) / 3600000;
+  if (h <= 24) return 3;
+  if (h <= 72) return 2;
+  return 1;
+}
+
+function hits(ticker, text) {
+  var keys = (ALIASES[ticker] || []).concat([ticker.toLowerCase()]);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    if (/^[a-z ]+$/.test(k)) {
+      if (new RegExp('(^|[^a-z])' + k.replace(/ /g, '\\s+') + '([^a-z]|$)', 'i').test(text)) return true;
+    } else if (text.indexOf(k) !== -1) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function rankGroup(containerId) {
+  if (POOL.length < 5) return false;                       // too little data — keep seeded order
+  var wrap = document.getElementById(containerId);
+  var cards = Array.prototype.slice.call(wrap.querySelectorAll('.card'));
+
+  var scores = cards.map(function (card) {
+    var t = card.dataset.ticker;
+    var raw = POOL.reduce(function (s, item) {
+      return s + (hits(t, item.title.toLowerCase()) ? weight(item.date) : 0);
+    }, 0);
+    return { card: card, raw: raw };
+  });
+
+  var max = Math.max.apply(null, scores.map(function (s) { return s.raw; }));
+  if (max === 0) return false;                             // nobody mentioned — keep seeded order
+
+  scores.sort(function (a, b) { return b.raw - a.raw; });
+  scores.forEach(function (s, idx) {
+    var score = s.raw === 0 ? 0 : Math.max(4, Math.round(100 * s.raw / max));
+    s.card.querySelector('.rk').textContent = String(idx + 1);
+    s.card.querySelector('.bz').textContent = String(score);
+    s.card.querySelector('.fill').style.width = score + '%';
+    wrap.appendChild(s.card);
+  });
+  return true;
+}
+
+/* ---- ticker tape ---- */
+function buildTape() {
+  var items = [
+    ['SET', '1,586.26', '+0.18%', 'up'],
+    ['Fed', 'ขึ้นดอกเบี้ย 16 ก.ย.', 'ครั้งแรกรอบ 3 ปี', ''],
+    ['Brent', '~$101', 'Middle East', 'up'],
+    ['DELTA', '฿243.00', '+0.83%', 'up'],
+    ['GULF', '฿61.50', '+0.82%', 'up'],
+    ['TTB', '', '+1.95%', 'up'],
+    ['SCB', '', '+0.66%', 'up'],
+    ['KTB', 'top value', '฿2.07bn', ''],
+    ['SET support', '1,560', 'resistance 1,575', ''],
+    ['Turnover', '฿61.9bn', '15 ก.ย. ฿75.8bn', '']
+  ];
+  var html = items.map(function (i) {
+    return '<span class="tk"><b>' + i[0] + '</b> ' + i[1] +
+      (i[2] ? ' <span class="' + i[3] + '">' + i[2] + '</span>' : '') + '</span>';
+  }).join('');
+  document.getElementById('tape').innerHTML = html + html;
+}
+
+/* ---- clock ---- */
+function tickClock() {
+  var now = new Date();
+  var s = now.toLocaleString('th-TH', {
+    timeZone: 'Asia/Bangkok', day: '2-digit', month: 'short',
+    hour: '2-digit', minute: '2-digit'
+  });
+  document.getElementById('clock').textContent = s + ' ICT';
+}
+
+/* ---- status ---- */
+function setStatus(state, text) {
+  var dot = document.getElementById('statusDot');
+  dot.className = 'dot' + (state === 'ok' ? '' : state === 'partial' ? ' stale' : ' dead');
+  document.getElementById('statusText').textContent = text;
+}
+
+/* ---- orchestration ---- */
+var busy = false;
+function refreshAll() {
+  if (busy) return;
+  busy = true;
+  var btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  setStatus('partial', 'Updating…');
+  document.getElementById('buzzState').textContent = 'updating…';
+
+  loadAll()
+    .then(function (results) {
+      var feedOk = results.filter(Boolean).length;
+      var a = rankGroup('thCards');
+      var b = rankGroup('glCards');
+      var buzzOk = a || b;
+      var stamp = new Date().toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById('buzzState').textContent = buzzOk
+        ? 'live · ' + POOL.length + ' หัวข้อข่าว · ' + stamp
+        : 'seeded (ข่าวไม่พอสำหรับจัดอันดับ)';
+
+      if (feedOk === 3 && buzzOk) setStatus('ok', 'Live · อัปเดต ' + stamp);
+      else if (feedOk > 0) setStatus('partial', 'Partial · อัปเดต ' + stamp);
+      else setStatus('dead', 'ออฟไลน์ — แสดงข้อมูลที่บันทึกไว้');
+    })
+    .catch(function () { setStatus('dead', 'ออฟไลน์ — แสดงข้อมูลที่บันทึกไว้'); })
+    .finally(function () { busy = false; btn.disabled = false; });
+}
+
+buildTape();
+tickClock();
+setInterval(tickClock, 30000);
+document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+refreshAll();
+setInterval(refreshAll, 5 * 60 * 1000);
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) refreshAll();
+});
+</script>
+</body>
+</html>
