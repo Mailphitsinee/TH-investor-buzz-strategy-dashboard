@@ -294,7 +294,7 @@ tr:last-child td{border-bottom:none}td:first-child{white-space:normal}
   <div class="disc">
     <b>Prices:</b> Sourced from Yahoo Finance via a Netlify serverless function. Data is subject to a 15-minute exchange-mandated delay. Not suitable for live trading decisions &mdash; use SET.or.th or your broker for real-time quotes.<br><br>
     <b>Buzz score:</b> Counts English ticker + company-name mentions across 3 Thai-language Google News RSS pools (hl=th, gl=TH, 7-day window), weighted by recency (&le;24h &times;3, &le;72h &times;2, older &times;1), normalised 0&ndash;100. Both Thai and offshore stocks are scored from the same Thai-investor news pool, so buzz reflects Thai-investor discussion volume &mdash; not a global post count.<br><br>
-    <b>Dynamic ranking &amp; discovery:</b> Cards are rendered live and ranked by buzz; the displayed tickers change as discussion shifts. A discovery layer also scans headlines for uppercase ticker tokens NOT in the curated watchlist, resolves a live price for them (best-effort), and surfaces them as &ldquo;Discovered&rdquo; cards &mdash; so stocks not on the page can appear when Thai investors start talking about them.<br><br>
+    <b>Dynamic ranking &amp; discovery:</b> Cards are rendered live and ranked by buzz; the displayed tickers change as discussion shifts. A discovery layer also scans headlines for uppercase ticker tokens NOT in the curated watchlist, resolves a live price and company name for them, and surfaces them as &ldquo;Discovered&rdquo; cards &mdash; but only when a real company name can be resolved. Opaque tokens with no identifiable name are dropped, not shown.<br><br>
     <b>Strategies:</b> Rules-based, generated from the live top-buzz tickers and Yahoo price data &mdash; they reference whatever is trending this period, not a fixed ticker list. Editorial judgment is required before acting on any recommendation.<br><br>
     <b>This dashboard is not investment advice.</b> All data should be independently verified before use in client-facing materials.
   </div>
@@ -728,11 +728,20 @@ function refreshDiscovered(map){
     .then(function(d){
       if(!d||!d.result) return;
       var got={}; d.result.forEach(function(q){got[q.symbol]=q;});
-      var resolved=cand.filter(function(c){return got[c.ticker];});
+      // Only keep discovered tickers we can resolve to a REAL company name.
+      // Opaque tokens (e.g. "SA") with no name → dropped entirely.
+      var resolved=cand.filter(function(c){
+        var q=got[c.ticker]; if(!q) return false;
+        var nm=(q.name||'').trim();
+        if(c.ticker.length<3) return false;          // drop very short tokens
+        if(!nm || nm.length<3) return false;          // need a real company name
+        if(nm.toLowerCase()===c.ticker.toLowerCase()) return false; // name=ticker, not real
+        c.q=q; c.name=nm; return true;
+      });
       if(!resolved.length) return;
       var max=Math.max.apply(null,resolved.map(function(c){return c.raw;}));
       var html=resolved.map(function(c){
-        var u={ticker:c.ticker,sym:c.ticker,name:'Discovered · '+c.ticker,exch:'DISCOVERED',tags:'discovered',desc:'Surfaced from Thai-investor news buzz this period — not in the curated watchlist. Price auto-resolved; verify the ticker before use.'};
+        var u={ticker:c.ticker,sym:c.ticker,name:c.name,exch:'DISCOVERED',tags:'discovered',desc:'Surfaced from live Thai-investor news buzz this period.'};
         return cardHTML({u:u,rank:'—',score:Math.max(4,Math.round(100*c.raw/max))},true);
       }).join('');
       document.getElementById('glCards').insertAdjacentHTML('beforeend',html);
