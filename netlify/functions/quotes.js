@@ -64,7 +64,8 @@ async function fetchChart(sym) {
       regularMarketDayLow: meta.regularMarketDayLow || meta.regularMarketPrice,
       regularMarketVolume: meta.regularMarketVolume || 0,
       regularMarketTime: meta.regularMarketTime || Math.floor(Date.now() / 1000),
-      currency: meta.currency || (sym.endsWith('.BK') ? 'THB' : 'USD')
+      currency: meta.currency || (sym.endsWith('.BK') ? 'THB' : 'USD'),
+      name: (meta.longName || meta.shortName || '').trim()
     };
   } catch (e) { return null; }
 }
